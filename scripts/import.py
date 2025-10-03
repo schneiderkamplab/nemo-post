@@ -14,7 +14,7 @@ def main(
 ):
     snapshot_download(
         repo_id=f"openai/gpt-oss-{model_size}b",
-        local_dir=f"gpt-oss-{model_size}b",
+        local_dir=f"models/gpt-oss-{model_size}b",
         local_dir_use_symlinks=False
     )
     config = model_configs[model_size]()
@@ -22,7 +22,7 @@ def main(
     llm.import_ckpt(
         model=model,
         source=f'hf://gpt-oss-{model_size}b',
-        output_path=f'gpt-oss-{model_size}b-nemo',
+        output_path=f'models/gpt-oss-{model_size}b-nemo',
         overwrite=True,
     )
 
