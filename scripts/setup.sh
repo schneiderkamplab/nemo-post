@@ -30,3 +30,9 @@ patch $CONDA_PREFIX/lib/python3.12/site-packages/nemo/collections/llm/gpt/model/
 ---
 >     bias_activation_fusion: bool = False
 EOF
+patch $CONDA_PREFIX/lib/python3.12/site-packages/nemo/lightning/io/artifact/file.py <<'EOF'
+75c75
+<         raise FileExistsError(f"Dst file already exists {str(output)}")
+---
+>         print("Warning:", src, path, relative_dst, open(src,"rb").read() == open(output,"rb").read())
+EOF
