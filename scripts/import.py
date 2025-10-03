@@ -21,7 +21,7 @@ def main(
     model = llm.GPTOSSModel(config=config)
     llm.import_ckpt(
         model=model,
-        source=f'hf://gpt-oss-{model_size}b',
+        source=f'hf://models/gpt-oss-{model_size}b',
         output_path=f'models/gpt-oss-{model_size}b-nemo',
         overwrite=True,
     )
