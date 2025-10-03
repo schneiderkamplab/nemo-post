@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from nemo.collections import llm
 import nemo_run as run
 import type
