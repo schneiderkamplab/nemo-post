@@ -12,7 +12,7 @@ recipes_map = {
     120: llm.recipes.gpt_oss_120b.finetune_recipe,
 }
 
-def configure_recipe(nodes, gpus_per_node, name, peft, model_size, ep, tp, mbs, lora_r, lora_alpha):
+def configure_recipe(nodes, gpus_per_node, name, peft, model_size, ep, tp, mbs, gbs, lora_r, lora_alpha):
     recipe = recipes_map[model_size](
         name=name,
         resume_path=os.path.abspath(f"models/gpt-oss-{model_size}b-nemo"),
@@ -34,12 +34,12 @@ def configure_recipe(nodes, gpus_per_node, name, peft, model_size, ep, tp, mbs, 
     recipe.model.config.expert_tensor_parallel_size = 1
     recipe.model.config.sequence_parallel = tp > 1
     recipe.model.config.bias_activation_fusion = False
-    recipe.trainer.max_steps = 7264
+    recipe.trainer.max_steps = 128
     if recipe.peft:
         recipe.peft.dim = lora_r
         recipe.peft.alpha = lora_alpha
-    recipe.trainer.val_check_interval = 200
-    recipe.log.ckpt.every_n_train_steps = 200
+    recipe.trainer.val_check_interval = 128
+    recipe.log.ckpt.every_n_train_steps = 128
     recipe.trainer.log_every_n_steps = 1
     recipe.data = run.Config(
         llm.gpt.data.chat.ChatDataModule,
@@ -49,7 +49,7 @@ def configure_recipe(nodes, gpus_per_node, name, peft, model_size, ep, tp, mbs, 
             pretrained_model_name=f"models/gpt-oss-{model_size}b",
             use_fast=True,
         ),
-        global_batch_size = 128,
+        global_batch_size = gbs,
         micro_batch_size = mbs,
         use_hf_tokenizer_chat_template = True,
     )
@@ -74,11 +74,12 @@ def main(
     ep: int = 8,
     tp: int = 1,
     mbs: int = 1,
+    gbs: int = 128,
     lora_r: int = 8,
     lora_alpha: int = 16,
 ):
     name = f"gptoss_{model_size}b_{peft}"
-    recipe = configure_recipe(nodes=nodes, gpus_per_node=gpus_per_node, name=name, peft=peft, model_size=model_size, ep=ep, tp=tp, mbs=mbs, lora_r=lora_r, lora_alpha=lora_alpha)
+    recipe = configure_recipe(nodes=nodes, gpus_per_node=gpus_per_node, name=name, peft=peft, model_size=model_size, ep=ep, tp=tp, mbs=mbs, gbs=gbs, lora_r=lora_r, lora_alpha=lora_alpha)
     executor = local_executor_torchrun(nodes=nodes, devices=gpus_per_node)
     run.run(recipe, executor=executor, name=name)
 

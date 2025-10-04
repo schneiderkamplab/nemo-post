@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nemo.collections import llm
 import nemo_run as run
-import type
+import typer
 
 def merge_lora_with_base_model(peft_path, merged_path):
     return run.Partial(
