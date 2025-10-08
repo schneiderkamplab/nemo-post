@@ -1,30 +1,15 @@
 #!/usr/bin/env python
-from contextlib import suppress
-from datasets import load_dataset
+from datasets import DatasetDict, load_dataset
+from lightning.pytorch.core.datamodule import LightningDataModule
 from nemo.collections import llm
-from nemo.collections import common
 from nemo.utils import logging
 import nemo_run as run
-import os
-import typer
-from typing import Optional, Dict, Any, List
 from pathlib import Path
-from typing import Optional, Dict, Any, List, Union
-from pathlib import Path
-import glob
-
-from lightning.pytorch.core.datamodule import LightningDataModule
+import torch
 from torch.utils.data import DataLoader
-from datasets import load_dataset, Dataset, DatasetDict
-from transformers import AutoTokenizer, DataCollatorForLanguageModeling
-
-from typing import List, Dict, Any, Optional
-import torch
-from transformers import DataCollatorForLanguageModeling, PreTrainedTokenizerBase
-
-import torch
-from typing import List, Dict, Any, Optional
-from transformers import PreTrainedTokenizerBase
+from transformers import AutoTokenizer, PreTrainedTokenizerBase
+import typer
+from typing import Any, Dict, List, Optional
 
 class ChatCollator:
     def __init__(
@@ -195,7 +180,7 @@ def main(
     recipe.optim.lr_scheduler.constant_steps = 30000 // recipe.trainer.accumulate_grad_batches
     recipe.optim.lr_scheduler.max_steps = 152025 // recipe.trainer.accumulate_grad_batches
     recipe.optim.lr_scheduler.min_lr = 1e-08
-    print(recipe)
+    logging.info(recipe)
     executor = local_executor_torchrun(nodes=nodes, devices=gpus_per_node)
     run.run(recipe, executor=executor, name=name)
 
