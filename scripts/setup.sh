@@ -1,8 +1,9 @@
 #!/bin/bash
 # setup of environment
-conda create -n gptoss3 python=3.12 -y
+NEW_ENV=${1:-gpt-oss}
+conda create -n $NEW_ENV python=3.12 -y
 source $CONDA_PREFIX/etc/profile.d/conda.sh
-conda activate gptoss3
+conda activate $NEW_ENV
 conda info
 export TORCH_CUDA_ARCH_LIST="10.0"
 
@@ -10,7 +11,7 @@ export TORCH_CUDA_ARCH_LIST="10.0"
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb \
   && sudo dpkg -i cuda-keyring_1.1-1_all.deb \
   && sudo apt-get update \
-  && sudo apt-get -y install cudnn cuda-toolkit-12-8
+  && sudo apt-get -y install cudnn cuda-toolkit-12-8 libnccl-dev
 
 # install nemo-toolkit
 uv pip install transformer-engine[pytorch] \

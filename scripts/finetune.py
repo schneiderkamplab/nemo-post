@@ -35,6 +35,7 @@ def configure_recipe(nodes, gpus_per_node, name, peft, model_size, ep, tp, mbs, 
     recipe.model.config.sequence_parallel = tp > 1
     recipe.model.config.bias_activation_fusion = False
     recipe.trainer.max_steps = 128
+    recipe.trainer.optim.base_lr = 1e-7
     if recipe.peft:
         recipe.peft.dim = lora_r
         recipe.peft.alpha = lora_alpha
